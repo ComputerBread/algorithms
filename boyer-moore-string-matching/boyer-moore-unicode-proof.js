@@ -1,19 +1,21 @@
 function BoyerMoore(text, pattern) {
-    const n = text.length;
-    const m = pattern.length;
-    const badCharShift = computeBadCharacterRule(pattern);
-    const goodSuffixShift  = computeGoodSuffixRule(pattern);
+    const textNormalized = text.normalize()
+    const patternNormalized = pattern.normalize()
+    const n = textNormalized.length;
+    const m = patternNormalized.length;
+    const badCharShift = computeBadCharacterRule(patternNormalized);
+    const goodSuffixShift  = computeGoodSuffixRule(patternNormalized);
     let t = 0;
     while (t <= n-m) {
     	
         let j = m-1;
-        while (j >= 0 && pattern[j] === text[t+j]) {
+        while (j >= 0 && patternNormalized[j] === textNormalized[t+j]) {
             j--;
         }
         if(j === -1) {
             return t;
         } else {
-            let char = text[t+j];
+            let char = textNormalized[t+j];
             let lastOcc = (badCharShift.has(char) ? badCharShift.get(char) : -1);
             t = t + Math.max(j-lastOcc, goodSuffixShift[j]);
         }
@@ -73,7 +75,6 @@ let text = "Demonstration of bad-character rule with pattern P = NNAAMAN. There 
 let p = "ANAN";
 //p = "ABDABCABDAB"
 //p = "anpanman"
-//console.log(text[13])
 //console.log(BoyerMoore(text,p));
 
 
@@ -118,9 +119,8 @@ const testData = [
   // Call the function to run the tests
   //testStringMatchingAlgorithm();
 
-
 text = "내가 가진 건 이 노래 한방"; // From Anpanman by BTS (방탄소년단)
 p = "진"
-console.log(BoyerMoore(text,p)); // -1
+console.log(BoyerMoore(text,p)); // 4 too now
 p = "진"
 console.log(BoyerMoore(text,p)); // 4
