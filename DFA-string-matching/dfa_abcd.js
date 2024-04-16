@@ -1,8 +1,7 @@
 function constructDFA(pattern) {
     const m = pattern.length;
-    //const P = pattern.split('').map(char => char.charCodeAt(0) - 'a'.charCodeAt(0));
-    const P = pattern.split('').map(char => char.charCodeAt(0));
-    const alphabetLength = 128; // ASCII
+    const P = pattern.split('').map(char => char.charCodeAt(0) - 'a'.charCodeAt(0));
+    const alphabetLength = 5; // a, b, c, d, the rest
 
     // Create transition matrix (m+1 states, alphabet length letters)
     const transitions = new Array(m+1);
@@ -28,13 +27,15 @@ function constructDFA(pattern) {
     return transitions;
 }
 
+
+console.table(constructDFA("abcabdab")) // a=a,b=n,c=n,d=m -> anpanman = abcabdab
+
 function dfa_str_matching(pattern, text){
     const n = text.length;
     const m = pattern.length;
     const occurrences = [];
     const dfa = constructDFA(pattern);
-    //const T = text.split('').map(char => char.charCodeAt(0) - 'a'.charCodeAt(0));
-    const T = text.split('').map(char => char.charCodeAt(0));
+    const T = text.split('').map(char => char.charCodeAt(0) - 'a'.charCodeAt(0));
     let state = 0;
     for ( let i = 0; i < n; i++ ) {
         state = dfa[state][T[i]];
@@ -44,12 +45,3 @@ function dfa_str_matching(pattern, text){
     }
     return occurrences;
 }
-
-console.table(JSON.stringify(constructDFA("ababac")))
-console.log(JSON.stringify(constructDFA("abcabdab")))
-const text = "aaaaaaaaaaaaaaaaaaaaaaaaaaaabaaaaaaabbbbbbbbbbbbbbbbbbbabaaaaaababbbbbaba";
-console.log(dfa_str_matching("aba",text))
-console.log(text.slice(27, 30))
-console.log(text.slice(55, 58))
-console.log(text.slice(62, 65))
-console.log(text.slice(70, 73))
