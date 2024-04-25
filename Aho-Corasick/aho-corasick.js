@@ -7,7 +7,7 @@ function addNewState(g) {
     for (let i = 0; i < alphabetLength; i++) g[m][i] = FAIL;
 }
 
-function AhoCorasick() {
+function AhoCorasick(text) {
     // const keywords = ["he", "she", "his", "hers"];
     const keywords = ["ab", "dab", "aed", "abcd"];
     // h -> a, e -> b, r -> c, s -> d, i -> e
@@ -27,8 +27,9 @@ function AhoCorasick() {
         }
     }
 
+    const failure = failureFunc(g, output);
     console.table(g);
-    console.log(JSON.stringify(failureFunc(g, output)));
+    console.log(JSON.stringify(failure));
     console.table(output);
 
     // because of newstate
@@ -53,6 +54,18 @@ function AhoCorasick() {
             output.set(state, new Set());
         }
         output.get(state).add(keyword);
+    }
+
+    // pattern matching
+    let state = 0;
+    for ( let i = 0; i < text.length; i++) {
+        while (g[state][text[i].charCodeAt(0) - 97] === FAIL) {
+            state = failure[state];
+        }
+        state = g[state][text[i].charCodeAt(0) - 97]
+        if (output.has(state)) {
+            console.log(output.get(state), " found at position: ", i);
+        }
     }
 
 }
@@ -86,7 +99,6 @@ function failureFunc(g, output) {
 
             failure[s] = g[state][a];
             console.log(s);
-            if (s === 5) debugger;
             if (!output.has(s) && output.has(failure[s])) {
                 output.set(s,new Set());
             }
@@ -100,4 +112,4 @@ function failureFunc(g, output) {
     return failure;
 }
 
-AhoCorasick();
+AhoCorasick("abcdeababababdabdecabdebacbbdebabcbdbabcabcbabdebcbabcdebcabde");
