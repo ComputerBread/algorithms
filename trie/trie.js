@@ -91,17 +91,3 @@ class CompressedTrie {
         return len;
     }
 }
-
-const trie = new CompressedTrie();
-trie.insert("hello");
-trie.insert("helium");
-trie.insert("hero");
-trie.insert("heron");
-
-console.log(trie.search("hello")); // true
-console.log(trie.search("helium")); // true
-console.log(trie.search("hero")); // true
-console.log(trie.search("he")); // false
-console.log(trie.search("heron")); // false
-
-console.log(trie)

@@ -1,5 +1,5 @@
 // from <https://minecraft-ids.grahamedgecombe.com/items.json> (thanks you guys)
-const items = [
+export const items = [
     { "type": 0, "meta": 0, "name": "Air", "text_type": "air" },
     { "type": 1, "meta": 0, "name": "Stone", "text_type": "stone" },
     { "type": 1, "meta": 1, "name": "Granite", "text_type": "stone" },
