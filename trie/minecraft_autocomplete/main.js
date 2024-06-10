@@ -15,12 +15,26 @@ for (let i = 0; i < items.length; i++) {
 
 searchbox.addEventListener("keyup", function (e) {
     e.preventDefault();
-    console.log(e.target.value);
-    if (e.target.value === "") return;
-    const res = trie.prefixSearch(e.target.value);
-    console.log(res)
+    const value = e.target.value.trim();
+    if (value === "") return;
+
+    // when you have spaces, we take the intersection
+    const words = value.split(" ");
+    let resSet = null;
+    for (const word of words) {
+        if (word == "") continue;
+        const items = trie.prefixSearch(word);
+        if (resSet === null) {
+            resSet = new Set(items);
+        } else {
+            // experimental feature dropped today!!! 20240611
+            resSet = resSet.intersection(new Set(items))
+        }
+    }
+
+
     let html = '';
-    for (let item of res) {
+    for (let item of resSet) {
         html += "<div>"
         html += items[item].name;
         html += "</div>"
