@@ -26,16 +26,18 @@ class CompressedTrie {
                 let prefixLen = this.commonPrefixLength(word.slice(i), child.prefix);
 
                 // if no common prefix, we try with the next child
-                if (prefixLen === 0) break;
+                if (prefixLen === 0) continue;
 
                 // if common prefix is the prefix of the child
                 if (prefixLen === child.prefix.length) {
+                    prefixFound = true;
                     // then, if we've read the word completely
                     if (i === word.length - 1) {
                         child.leaves.push(id);
                         return;
                     }
                     // otherwise, we need to check this node's children
+                    node = child;
                     break;
                 }
 
@@ -48,6 +50,7 @@ class CompressedTrie {
                 newChild.children = child.children;
                 child.children = { [newChild.prefix[0]]: newChild };
                 child.leaves = [];
+                child.prefix = child.prefix.slice(0, prefixLen);
 
                 node = child;
                 i += prefixLen;
@@ -97,7 +100,6 @@ class CompressedTrie {
         let node = this.root;
         let i = 0;
         while (i < prefix.length) {
-            let
         }
 
     }
@@ -115,12 +117,9 @@ class CompressedTrie {
 }
 
 const trie = new CompressedTrie();
-trie.insert("hello");
-trie.insert("helium");
-trie.insert("hero");
+trie.insert("hello", 1);
+trie.insert("helium", 2);
+trie.insert("hero", 3);
+trie.insert("hero", 4);
 
-console.log(trie.search("hello")); // true
-console.log(trie.search("helium")); // true
-console.log(trie.search("hero")); // true
-console.log(trie.search("he")); // false
-console.log(trie.search("heron")); // false
+console.log("ok")
