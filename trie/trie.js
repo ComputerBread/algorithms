@@ -1,93 +1,53 @@
-// chatgpt is a better programmer than me
-// chatgpt was indeed cooking!
 class TrieNode {
-    constructor(prefix = '') {
-        this.prefix = prefix;
-        this.isEnd = false;
+    children = {};
+    isEnd = false;
+    constructor() {
         this.children = {};
+        this.isEnd = false;
     }
 }
 
-
-class CompressedTrie {
+class Trie {
     constructor() {
         this.root = new TrieNode();
     }
 
     insert(word) {
         let node = this.root;
-        let i = 0;
-
-        while (i < word.length) {
-            let prefixFound = false;
-
-            // Find a child with a matching prefix
-            for (let key in node.children) {
-                let child = node.children[key];
-                let prefixLen = this.commonPrefixLength(word.slice(i), child.prefix);
-
-                if (prefixLen > 0) {
-                    if (prefixLen < child.prefix.length) {
-                        // Split the node
-                        let newChild = new TrieNode(child.prefix.slice(prefixLen));
-                        newChild.children = child.children;
-                        newChild.isEnd = child.isEnd;
-
-                        child.prefix = child.prefix.slice(0, prefixLen);
-                        child.children = { [newChild.prefix[0]]: newChild };
-                        child.isEnd = false;
-                    }
-                    node = child; // this is why it works,
-                    i += prefixLen;
-                    prefixFound = true;
-                    break;
-                }
+        for (let i = 0; i < word.length; i++) {
+            let char = word[i];
+            if (!(char in node.children)) {
+                node.children[char] = new TrieNode();
             }
-
-            // If no prefix matches, create a new child
-            if (!prefixFound) {
-                let newNode = new TrieNode(word.slice(i));
-                node.children[newNode.prefix[0]] = newNode;
-                node = newNode;
-                break;
-            }
+            node = node.children[char];
         }
-
         node.isEnd = true;
     }
 
     search(word) {
         let node = this.root;
-        let i = 0;
 
-        while (i < word.length) {
-            let prefixFound = false;
+        for (let i = 0; i < word.length; i++) {
+            let char = word[i];
 
-            for (let key in node.children) {
-                let child = node.children[key];
-                let prefixLen = this.commonPrefixLength(word.slice(i), child.prefix);
-
-                if (prefixLen === child.prefix.length) {
-                    node = child;
-                    i += prefixLen;
-                    prefixFound = true;
-                    break;
-                }
-            }
-
-            if (!prefixFound) {
+            if (!node.children[char]) {
                 return false;
             }
+            node = node.children[char];
         }
-
         return node.isEnd;
     }
 
-    commonPrefixLength(a, b) {
-        let len = 0;
-        while (len < a.length && len < b.length && a[len] === b[len]) {
-            len++;
+    startsWith(prefix) {
+        let node = this.root;
+        for (let i = 0; i < prefix.length; i++) {
+            let char = prefix[i];
+            if (!node.children[char]) {
+                return false;
+            }
+            node = node.children[char];
         }
-        return len;
+        return true;
     }
+
 }

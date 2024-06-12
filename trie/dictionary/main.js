@@ -37,4 +37,4 @@ searchbox.addEventListener("keyup", function (e) {
 });
 
 console.log("normal     trie, node count: ", trie.totalNodeCount) // 131221
-console.log("compressed trie, node count: ", compressedTrie.totalNodeCount) // 45643
+console.log("compressed trie, node count: ", compressedTrie.totalNodeCount) // 45643 (35% of regular trie)
