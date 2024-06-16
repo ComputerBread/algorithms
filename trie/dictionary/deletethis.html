@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dictionary</title>
+</head>
+
+<body>
+    <main>
+        <input type="text" id="searchbox" placeholder="search word" autocomplete="off">
+        <div id="resbox"></div>
+    </main>
+    <script>
+        const searchbox = document.getElementById("searchbox");
+        const resbox = document.getElementById("resbox");
+        searchbox.addEventListener("keyup", function (e) {
+            e.preventDefault();
+            const value = e.target.value.trim().toLowerCase();
+            resbox.innerText = value;
+        });
+    </script>
+</body>
+
+</html>

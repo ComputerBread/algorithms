@@ -1,15 +1,17 @@
-class TrieNode {
-    children = {};
-    isEnd = false;
+
+class Node {
+
     constructor() {
         this.children = {};
         this.isEnd = false;
     }
+
 }
 
 class Trie {
+
     constructor() {
-        this.root = new TrieNode();
+        this.root = new Node();
     }
 
     insert(word) {
@@ -17,7 +19,7 @@ class Trie {
         for (let i = 0; i < word.length; i++) {
             let char = word[i];
             if (!(char in node.children)) {
-                node.children[char] = new TrieNode();
+                node.children[char] = new Node();
             }
             node = node.children[char];
         }

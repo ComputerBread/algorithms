@@ -1,6 +1,4 @@
-class TrieNode {
-    children = {};
-    isEnd = false;
+class Node {
     constructor() {
         this.children = {};
         this.isEnd = -1;
@@ -9,7 +7,7 @@ class TrieNode {
 
 export class Trie {
     constructor() {
-        this.root = new TrieNode();
+        this.root = new Node();
         this.totalNodeCount = 1;
     }
 
@@ -19,7 +17,7 @@ export class Trie {
         for (let i = 0; i < word.length; i++) {
             let char = word[i];
             if (!(char in node.children)) {
-                node.children[char] = new TrieNode();
+                node.children[char] = new Node();
                 this.totalNodeCount++;
             }
             node = node.children[char];
@@ -63,7 +61,7 @@ export class Trie {
             let char = prefix[i];
 
             if (!(char in node.children)) {
-                return [];
+                return ids;
             }
             node = node.children[char];
         }
