@@ -1,8 +1,9 @@
-// chatgpt is a better programmer than me
+// chatgpt is a better programmer than me (no it's not!)
+// chatgpt was indeed cooking!
 class TrieNode {
-    constructor(prefix = '', id = null) {
+    constructor(prefix = '') {
         this.prefix = prefix;
-        this.leaves = (id) ? [id] : [];
+        this.isEnd = false;
         this.children = {};
     }
 }
@@ -26,21 +27,17 @@ class CompressedTrie {
                 let prefixLen = this.commonPrefixLength(word.slice(i), child.prefix);
 
                 if (prefixLen > 0) {
-                    // if partial prefix match (ex: prefix = aaab, and we insert aaac)
-                    // we need to modify the node, to have prefix "aaa" and add 2 new children for (aaa)"b" and (aaa)"c"
                     if (prefixLen < child.prefix.length) {
-                        // Split the node "[0..prefixLen)[prefixLen..]"
-                        let newChild = new TrieNode(child.prefix.slice(prefixLen)); // suffix [prefixLen..]
+                        // Split the node
+                        let newChild = new TrieNode(child.prefix.slice(prefixLen));
                         newChild.children = child.children;
-                        newChild.leaves = child.leaves;
+                        newChild.isEnd = child.isEnd;
 
-                        child.prefix = child.prefix.slice(0, prefixLen); // [0..prefixLen)
-                        child.children = { [newChild.prefix[0]]: newChild }; // add [prefixLen]
-                        child.leaves = null;
-
-                        // something missing no? no
+                        child.prefix = child.prefix.slice(0, prefixLen);
+                        child.children = { [newChild.prefix[0]]: newChild };
+                        child.isEnd = false;
                     }
-                    node = child;
+                    node = child; // this is why it works,
                     i += prefixLen;
                     prefixFound = true;
                     break;
@@ -86,17 +83,6 @@ class CompressedTrie {
         return node.isEnd;
     }
 
-    // return all words with this prefix
-    partialSearch(prefix) {
-        let node = this.root;
-        let i = 0;
-        while (i < prefix.length) {
-            let
-        }
-
-    }
-
-
     commonPrefixLength(a, b) {
         let len = 0;
         while (len < a.length && len < b.length && a[len] === b[len]) {
@@ -104,17 +90,18 @@ class CompressedTrie {
         }
         return len;
     }
-
-
 }
 
 const trie = new CompressedTrie();
 trie.insert("hello");
 trie.insert("helium");
 trie.insert("hero");
+trie.insert("heron");
 
 console.log(trie.search("hello")); // true
 console.log(trie.search("helium")); // true
 console.log(trie.search("hero")); // true
 console.log(trie.search("he")); // false
 console.log(trie.search("heron")); // false
+
+console.log(trie)

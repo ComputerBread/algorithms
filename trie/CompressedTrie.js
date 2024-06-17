@@ -1,86 +1,153 @@
-// chatgpt is a better programmer than me
-// chatgpt was indeed cooking!
 class TrieNode {
+
     constructor(prefix = '') {
         this.prefix = prefix;
-        this.isEnd = false;
+        this.isEndOfWord = false;
         this.children = {};
     }
+
 }
 
 
-class CompressedTrie {
+export class CompressedTrie {
     constructor() {
         this.root = new TrieNode();
+        this.totalNodeCount = 0;
     }
 
-    insert(word) {
+    insert(word, id) {
         let node = this.root;
         let i = 0;
 
         while (i < word.length) {
+
             let prefixFound = false;
 
-            // Find a child with a matching prefix
-            for (let key in node.children) {
+            const key = word.charAt(i);
+            if (key in node.children) {
+
                 let child = node.children[key];
                 let prefixLen = this.commonPrefixLength(word.slice(i), child.prefix);
 
-                if (prefixLen > 0) {
-                    if (prefixLen < child.prefix.length) {
-                        // Split the node
-                        let newChild = new TrieNode(child.prefix.slice(prefixLen));
-                        newChild.children = child.children;
-                        newChild.isEnd = child.isEnd;
-
-                        child.prefix = child.prefix.slice(0, prefixLen);
-                        child.children = { [newChild.prefix[0]]: newChild };
-                        child.isEnd = false;
+                // if common prefix is the prefix of the child
+                if (prefixLen === child.prefix.length) {
+                    prefixFound = true;
+                    // then, if we've read the word completely
+                    if (i + prefixLen === word.length) {
+                        return;
                     }
-                    node = child; // this is why it works,
+                    // otherwise, we need to check this node's children
+                    node = child;
+                    i += prefixLen;
+                } else {
+                    // otherwise if 0 < prefixLen < child.prefix.length
+                    // need to modify the current child to only contain the common prefix
+                    // need to create 2 children
+                    // one that replace this child! and one for the word we are adding
+                    let newChild = new TrieNode(child.prefix.slice(prefixLen));
+                    this.totalNodeCount++;
+                    newChild.isEndOfWord = child.isEndOfWord;
+                    newChild.children = child.children;
+                    child.children = { [newChild.prefix[0]]: newChild };
+                    child.leaves = false;
+                    child.prefix = child.prefix.slice(0, prefixLen);
+
+                    node = child;
                     i += prefixLen;
                     prefixFound = true;
-                    break;
                 }
+
             }
 
-            // If no prefix matches, create a new child
+            // if not found, we need to insert an new node
             if (!prefixFound) {
-                let newNode = new TrieNode(word.slice(i));
+                const newNode = new TrieNode(word.slice(i), id);
+                this.totalNodeCount++;
                 node.children[newNode.prefix[0]] = newNode;
-                node = newNode;
                 break;
             }
         }
 
-        node.isEnd = true;
     }
 
-    search(word) {
+    // exact search
+    search(prefix) {
         let node = this.root;
         let i = 0;
-
-        while (i < word.length) {
-            let prefixFound = false;
-
-            for (let key in node.children) {
-                let child = node.children[key];
-                let prefixLen = this.commonPrefixLength(word.slice(i), child.prefix);
-
-                if (prefixLen === child.prefix.length) {
-                    node = child;
-                    i += prefixLen;
-                    prefixFound = true;
-                    break;
-                }
+        while (i < prefix.length) {
+            const key = prefix.charAt(i);
+            if (!(key in node.children)) {
+                // not found bozo
+                return [];
             }
 
-            if (!prefixFound) {
-                return false;
+            const child = node.children[key];
+            let prefixLen = this.commonPrefixLength(prefix.slice(i), child.prefix);
+            if (prefixLen !== child.prefix.length) {
+                return [];
             }
+            if (prefixLen + i === prefix.length) {
+                return child.leaves;
+            }
+            node = child;
+            i += prefixLen;
+            // pedro pedro pedro pedro pedro pedro pedro pedro pedro pedro
         }
 
-        return node.isEnd;
+        return [];
+    }
+
+    // return indices of all word beginning with this prefix
+    prefixSearch(prefix) {
+        let node = this.root;
+        let i = 0;
+        while (i < prefix.length) {
+            const key = prefix.charAt(i);
+            if (!(key in node.children)) {
+                // not found bozo
+                return [];
+            }
+
+            const child = node.children[key];
+            let prefixLen = this.commonPrefixLength(prefix.slice(i), child.prefix);
+            if (prefixLen == 0) {
+                return [];
+            }
+
+            // if we are done reading "prefix"
+            // and it was found entirely in child.prefix
+            // we return all leaves in this subtree
+            if (prefixLen + i === prefix.length) {
+                return this.dfs(child);
+            }
+
+            // if prefix is not part of the trie
+            if (prefixLen !== child.prefix.length) {
+                return [];
+            }
+
+            // otherwise, child.prefix.length = prefixLen && prefix was not entirely read
+            node = child;
+            i += prefixLen;
+        }
+
+        return [];
+    }
+
+    // now that i've done this,
+    // it's time to think
+    // what order do I want?
+    dfs(node) {
+        const leaves = [];
+        const nodes = [node];
+        while (nodes.length != 0) {
+            const node = nodes.pop();
+            leaves.push(...(node.leaves));
+            for (const key in node.children) {
+                nodes.push(node.children[key]);
+            }
+        }
+        return leaves;
     }
 
     commonPrefixLength(a, b) {
@@ -90,18 +157,15 @@ class CompressedTrie {
         }
         return len;
     }
+
+
 }
 
 const trie = new CompressedTrie();
-trie.insert("hello");
-trie.insert("helium");
-trie.insert("hero");
-trie.insert("heron");
+trie.insert("hello", 1);
+trie.insert("helium", 2);
+trie.insert("hero", 3);
+trie.insert("hero", 4);
+trie.insert("heron", 5);
 
-console.log(trie.search("hello")); // true
-console.log(trie.search("helium")); // true
-console.log(trie.search("hero")); // true
-console.log(trie.search("he")); // false
-console.log(trie.search("heron")); // false
-
-console.log(trie)
+console.log(trie.prefixSearch("he"));
