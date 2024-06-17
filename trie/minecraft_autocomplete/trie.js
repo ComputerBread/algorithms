@@ -2,7 +2,7 @@
 class TrieNode {
     constructor(prefix = '', id = null) {
         this.prefix = prefix;
-        this.leaves = (id) ? [id] : [];
+        this.leaves = (id) ? [id] : []; // array because same word can appear in name of multiple items
         this.children = {};
     }
 }
