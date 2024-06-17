@@ -1,17 +1,15 @@
-import { dictionary } from "./dictionary.js";
-import { Trie } from "./trie.js";
+import { dictionary } from "../dictionary/dictionary.js";
+import { CompressedTrie } from "./CompressedTrie.js";
 
 const searchbox = document.getElementById("searchbox");
 const resbox = document.getElementById("resbox");
 
 console.log(dictionary[0].word)
 
-const trie = new Trie();
+const compressedTrie = new CompressedTrie();
 for (let i = 0; i < dictionary.length; i++) {
-    trie.insert(dictionary[i].word.toLowerCase(), i);
+    compressedTrie.insert(dictionary[i].word.toLowerCase(), i);
 }
-
-console.log(trie.root)
 
 searchbox.addEventListener("keyup", function (e) {
     e.preventDefault();
@@ -21,7 +19,7 @@ searchbox.addEventListener("keyup", function (e) {
         return;
     }
 
-    const ids = trie.partialSearch(value);
+    const ids = compressedTrie.partialSearch(value);
     console.log("ids for ", value, ": ", ids)
     let html = '';
     for (let id of ids) {
@@ -34,4 +32,4 @@ searchbox.addEventListener("keyup", function (e) {
 });
 
 console.log("normal     trie, node count: ", trie.totalNodeCount) // 131221
-// console.log("compressed trie, node count: ", compressedTrie.totalNodeCount) // 45643 (35% of regular trie)
+console.log("compressed trie, node count: ", compressedTrie.totalNodeCount) // 45643 (35% of regular trie)
