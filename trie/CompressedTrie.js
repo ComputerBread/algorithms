@@ -1,3 +1,4 @@
+// for cooler/more complete example check minecraft_autocomplete
 class TrieNode {
 
     constructor(prefix = '') {
@@ -8,14 +9,13 @@ class TrieNode {
 
 }
 
-
-export class CompressedTrie {
+class CompressedTrie {
     constructor() {
         this.root = new TrieNode();
-        this.totalNodeCount = 0;
+        this.totalNodeCount = 1;
     }
 
-    insert(word, id) {
+    insert(word) {
         let node = this.root;
         let i = 0;
 
@@ -49,7 +49,7 @@ export class CompressedTrie {
                     newChild.isEndOfWord = child.isEndOfWord;
                     newChild.children = child.children;
                     child.children = { [newChild.prefix[0]]: newChild };
-                    child.leaves = false;
+                    child.isEndOfWord = false;
                     child.prefix = child.prefix.slice(0, prefixLen);
 
                     node = child;
@@ -61,7 +61,8 @@ export class CompressedTrie {
 
             // if not found, we need to insert an new node
             if (!prefixFound) {
-                const newNode = new TrieNode(word.slice(i), id);
+                const newNode = new TrieNode(word.slice(i));
+                newNode.isEndOfWord = true;
                 this.totalNodeCount++;
                 node.children[newNode.prefix[0]] = newNode;
                 break;
@@ -78,76 +79,22 @@ export class CompressedTrie {
             const key = prefix.charAt(i);
             if (!(key in node.children)) {
                 // not found bozo
-                return [];
+                return false;
             }
 
             const child = node.children[key];
             let prefixLen = this.commonPrefixLength(prefix.slice(i), child.prefix);
             if (prefixLen !== child.prefix.length) {
-                return [];
+                return false;
             }
             if (prefixLen + i === prefix.length) {
-                return child.leaves;
+                return child.isEndOfWord;
             }
-            node = child;
-            i += prefixLen;
-            // pedro pedro pedro pedro pedro pedro pedro pedro pedro pedro
-        }
-
-        return [];
-    }
-
-    // return indices of all word beginning with this prefix
-    prefixSearch(prefix) {
-        let node = this.root;
-        let i = 0;
-        while (i < prefix.length) {
-            const key = prefix.charAt(i);
-            if (!(key in node.children)) {
-                // not found bozo
-                return [];
-            }
-
-            const child = node.children[key];
-            let prefixLen = this.commonPrefixLength(prefix.slice(i), child.prefix);
-            if (prefixLen == 0) {
-                return [];
-            }
-
-            // if we are done reading "prefix"
-            // and it was found entirely in child.prefix
-            // we return all leaves in this subtree
-            if (prefixLen + i === prefix.length) {
-                return this.dfs(child);
-            }
-
-            // if prefix is not part of the trie
-            if (prefixLen !== child.prefix.length) {
-                return [];
-            }
-
-            // otherwise, child.prefix.length = prefixLen && prefix was not entirely read
             node = child;
             i += prefixLen;
         }
 
-        return [];
-    }
-
-    // now that i've done this,
-    // it's time to think
-    // what order do I want?
-    dfs(node) {
-        const leaves = [];
-        const nodes = [node];
-        while (nodes.length != 0) {
-            const node = nodes.pop();
-            leaves.push(...(node.leaves));
-            for (const key in node.children) {
-                nodes.push(node.children[key]);
-            }
-        }
-        return leaves;
+        return false;
     }
 
     commonPrefixLength(a, b) {
@@ -162,10 +109,14 @@ export class CompressedTrie {
 }
 
 const trie = new CompressedTrie();
-trie.insert("hello", 1);
-trie.insert("helium", 2);
-trie.insert("hero", 3);
-trie.insert("hero", 4);
-trie.insert("heron", 5);
+trie.insert("hello");
+trie.insert("helium");
+trie.insert("hero");
+trie.insert("hero");
+trie.insert("heron");
 
-console.log(trie.prefixSearch("he"));
+console.log(trie.search("hello"));
+console.log(trie.search("helium"));
+console.log(trie.search("hero"));
+console.log(trie.search("heron"));
+console.log(trie.search("false"));
