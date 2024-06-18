@@ -1,5 +1,6 @@
 import { dictionary } from "./dictionary.js";
 import { Trie } from "./trie.js";
+import { CompressedTrie } from "./CompressedTrie.js";
 
 const searchbox = document.getElementById("searchbox");
 const resbox = document.getElementById("resbox");
@@ -7,8 +8,10 @@ const resbox = document.getElementById("resbox");
 console.log(dictionary[0].word)
 
 const trie = new Trie();
+const ct = new CompressedTrie();
 for (let i = 0; i < dictionary.length; i++) {
     trie.insert(dictionary[i].word.toLowerCase(), i);
+    ct.insert(dictionary[i].word.toLowerCase());
 }
 
 console.log(trie.root)
@@ -34,4 +37,4 @@ searchbox.addEventListener("keyup", function (e) {
 });
 
 console.log("normal     trie, node count: ", trie.totalNodeCount) // 131221
-// console.log("compressed trie, node count: ", compressedTrie.totalNodeCount) // 45643 (35% of regular trie)
+console.log("compressed trie, node count: ", ct.totalNodeCount) // 45644 (35% of regular trie)

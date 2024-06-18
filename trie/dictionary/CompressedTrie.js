@@ -9,7 +9,7 @@ class TrieNode {
 
 }
 
-class CompressedTrie {
+export class CompressedTrie {
     constructor() {
         this.root = new TrieNode();
         this.totalNodeCount = 1;
