@@ -33,8 +33,9 @@ class CompressedTrie {
             }
 
             node = node.children[key];
-            let prefixLen = this.commonPrefixLength(word.slice(i), node.prefix);
+            const prefixLen = this.commonPrefixLength(word.slice(i), node.prefix);
 
+            i += prefixLen;
             // - prefixLen = 0 is impossible, because there's at least the first character in common!
             // - if prefixLen == node.prefix.length, doing i+= prefixLen will break out of the loop
             // - otherwise if 0 < prefixLen < child.prefix.length
@@ -42,17 +43,15 @@ class CompressedTrie {
             //   need to create 2 children
             //   one that replace this child! and one for the word we are adding
             if (prefixLen < node.prefix.length) {
-                let newChild = new TrieNode(node.prefix.slice(prefixLen));
+                const newChild = new TrieNode(node.prefix.slice(prefixLen));
                 this.totalNodeCount++;
                 newChild.isEndOfWord = node.isEndOfWord;
                 newChild.children = node.children;
-                node.children = { [newChild.prefix[0]]: newChild };
-                node.isEndOfWord = false;
                 node.prefix = node.prefix.slice(0, prefixLen);
-
+                node.children = { [newChild.prefix[0]]: newChild };
+                node.isEndOfWord = i == word.length;
             }
 
-            i += prefixLen;
         }
     }
 
@@ -95,13 +94,21 @@ class CompressedTrie {
 
 const trie = new CompressedTrie();
 trie.insert("hello");
+trie.insert("hell");
 trie.insert("helium");
-trie.insert("hero");
-trie.insert("hero");
 trie.insert("heron");
+trie.insert("hero");
+trie.insert("hero");
+trie.insert("computer");
+trie.insert("compute");
+trie.insert("computing");
 
 console.log(trie.search("hello"));
+console.log(trie.search("hell"));
 console.log(trie.search("helium"));
 console.log(trie.search("hero"));
 console.log(trie.search("heron"));
+console.log(trie.search("compute"));
+console.log(trie.search("computer"));
+console.log(trie.search("computing"));
 console.log(trie.search("false"));

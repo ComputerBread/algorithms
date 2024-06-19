@@ -33,7 +33,8 @@ export class CompressedTrie {
             }
 
             node = node.children[key];
-            let prefixLen = this.commonPrefixLength(word.slice(i), node.prefix);
+            const prefixLen = this.commonPrefixLength(word.slice(i), node.prefix);
+            i += prefixLen;
 
             // - prefixLen = 0 is impossible, because there's at least the first character in common!
             // - if prefixLen == node.prefix.length, doing i+= prefixLen will break out of the loop
@@ -42,17 +43,16 @@ export class CompressedTrie {
             //   need to create 2 children
             //   one that replace this child! and one for the word we are adding
             if (prefixLen < node.prefix.length) {
-                let newChild = new TrieNode(node.prefix.slice(prefixLen));
+                const newChild = new TrieNode(node.prefix.slice(prefixLen));
                 this.totalNodeCount++;
                 newChild.isEndOfWord = node.isEndOfWord;
                 newChild.children = node.children;
                 node.children = { [newChild.prefix[0]]: newChild };
-                node.isEndOfWord = false;
+                node.isEndOfWord = i == word.length;
                 node.prefix = node.prefix.slice(0, prefixLen);
 
             }
 
-            i += prefixLen;
         }
     }
 
