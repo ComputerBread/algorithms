@@ -56,28 +56,28 @@ class CompressedTrie {
     }
 
     // exact search
-    search(prefix) {
+    search(word) {
         let node = this.root;
         let i = 0;
-        while (i < prefix.length) {
-            const key = prefix.charAt(i);
+        while (i < word.length) {
+            const key = word[i];
             if (!(key in node.children)) {
-                // not found bozo
                 return false;
             }
 
-            const child = node.children[key];
-            let prefixLen = this.commonPrefixLength(prefix.slice(i), child.prefix);
-            if (prefixLen !== child.prefix.length) {
+            node = node.children[key];
+
+            let prefixLen = this.commonPrefixLength(word.slice(i), node.prefix);
+            if (prefixLen !== node.prefix.length) {
                 return false;
             }
-            if (prefixLen + i === prefix.length) {
-                return child.isEndOfWord;
-            }
-            node = child;
+
             i += prefixLen;
-        }
 
+            if (i === word.length) {
+                return node.isEndOfWord;
+            }
+        }
         return false;
     }
 
@@ -112,3 +112,4 @@ console.log(trie.search("compute"));
 console.log(trie.search("computer"));
 console.log(trie.search("computing"));
 console.log(trie.search("false"));
+console.log(trie.search(""));
